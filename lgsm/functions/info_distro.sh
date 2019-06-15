@@ -129,31 +129,18 @@ fi
 ## Memory information
 # Available RAM and swap.
 
-if [ "${os}" = "FreeBSD" ]; then
-	physmemtotalkb=$(($(sysctl -n hw.physmem)/1024))
-	physmemfreekb=$(($(vmstat -H | awk 'END {print $5}')/1024))
-	physmemtotalmb=$((physmemtotalkb/1024))
-	physmemtotal=$((physmemtotalkb*1048576))
-	physmemfree=$((physmemfreekb*1048576))
-	physmemused=$((physmemtotal-physmemfree))
-	physmemavailable=$((physmemfreekb*1048576))
-	physmemcached=0
-
-	swaptotal=$(swapinfo | awk 'END {print $2}')
-	swapfree=$(swapinfo | awk 'END {print $4}')
-	swapused=$(swapinfo | awk 'END {print $3}')
-elif [ -n "$(command -v numfmt 2>/dev/null)" ]; then
 # Newer distros can use numfmt to give more accurate results
+if [ -n "$(command -v numfmt 2>/dev/null)" ]; then
 	# Issue #2005 - Kernel 3.14+ contains MemAvailable which should be used. All others will be calculated
 
-	# get the raw KB values of these fields
+	# get the raw KB values of these fields.
 	physmemtotalkb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 	physmemfreekb=$(grep ^MemFree /proc/meminfo | awk '{print $2}')
 	physmembufferskb=$(grep ^Buffers /proc/meminfo | awk '{print $2}')
 	physmemcachedkb=$(grep ^Cached /proc/meminfo | awk '{print $2}')
 	physmemreclaimablekb=$(grep ^SReclaimable /proc/meminfo | awk '{print $2}')
 
-	# check if MemAvailable Exists
+	# check if MemAvailable Exists.
 	if grep -q ^MemAvailable /proc/meminfo; then
 	    physmemactualfreekb=$(grep ^MemAvailable /proc/meminfo | awk '{print $2}')
 	else
@@ -233,12 +220,12 @@ fi
 if [ -d "${backupdir}" ]; then
 	# Used space in backups dir.
 	backupdirdu=$(du -sh "${backupdir}" | awk '{print $1}')
-	# If no backup dir, size is 0M
+	# If no backup dir, size is 0M.
 	if [ -z "${backupdirdu}" ]; then
 		backupdirdu="0M"
 	fi
 
-	# number of backups set to 0 by default
+	# number of backups set to 0 by default.
 	backupcount=0
 
 	# If there are backups in backup dir.
@@ -260,7 +247,7 @@ fi
 if [ -z "${extip}" ]; then
 	extip=$(${curlpath} -4 -m 3 ifconfig.co 2>/dev/null)
 	exitcode=$?
-	# Should ifconfig.co return an error will use last known IP
+	# Should ifconfig.co return an error will use last known IP.
 	if [ ${exitcode} -eq 0 ]; then
 		echo "${extip}" > "${tmpdir}/extip.txt"
 	else
@@ -281,7 +268,7 @@ else
 	alertip="${ip}"
 fi
 
-# Steam Master Server - checks if detected by master server
+# Steam Master Server - checks if detected by master server.
 if [ "$(command -v jq 2>/dev/null)" ]; then
 	if [ "${ip}" ]&&[ "${port}" ]; then
 		if [ "${steammaster}" == "true" ]; then
